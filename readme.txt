@@ -18,7 +18,7 @@ In the Appearance -> Widgets in WordPress 3.0.1 you'll find the `M-vSlider - Ima
 
 Insert the sidebar in your pages or posts with this shortcode
 
-`[rslider]`
+`[m-vslider id="x"]` (where `x` is slider ID)
 
 == Installation ==
 
