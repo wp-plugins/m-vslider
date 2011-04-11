@@ -27,7 +27,7 @@ Insert the sidebar in your pages or posts with this shortcode
 
 == Frequently Asked Questions ==
 
-Please post your questions at http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/
+Please post your comments and questions at http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/
 
 == Screenshots ==
 
