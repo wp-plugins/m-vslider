@@ -3,7 +3,7 @@ Contributors: mamirulamin
 Donate link: http://mamirulamin.wordpress.com/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
-Tested up to: 3.0.1
+Tested up to: 3.1.1
 Stable tag: trunk
 
 == Description ==
@@ -19,6 +19,12 @@ In the Appearance -> Widgets in WordPress 3.0.1 you'll find the `M-vSlider - Ima
 Insert the slider in your pages or posts with this shortcode
 
 `[m-vslider id="x"]` (where `x` is slider ID)
+
+= Use in Template/PHP code =
+
+Insert this code in your template/theme pages. (if you have installed php-exec plugin then you can insert this code in your post or page too)
+
+`<?php if (function_exists('rslider')) { rslider(x); }?>` (where `x` is slider ID)
 
 == Installation ==
 
