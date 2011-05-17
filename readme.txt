@@ -33,7 +33,12 @@ Insert this code in your template/theme pages. (if you have installed php-exec p
 
 == Frequently Asked Questions ==
 
-Please post your comments and questions at http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/
+`1. What is slider ID?`
+This is an auto-generated unique ID, assigned to a slider to uniquely identify it. 
+
+You'll find it in the table at Plugin Home page, 2nd column of table. (Please see "Plugin Admin Home" screenshot in Screenshots section)
+
+`Please post your comments and questions at http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/`
 
 == Screenshots ==
 
