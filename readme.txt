@@ -3,8 +3,8 @@ Contributors: mamirulamin
 Donate link: http://mamirulamin.wordpress.com/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
-Tested up to: 3.1.1
-Stable tag: trunk
+Tested up to: 3.1.2
+Stable tag: 1.1.0
 
 == Description ==
 
@@ -12,7 +12,7 @@ Implementing a featured image gallery into your WordPress theme has never been e
 
 = Widget =
 
-In the Appearance -> Widgets in WordPress 3.0.1 you'll find the `M-vSlider - Image Slider` widget. After adding it to your sidebar you can enter an optional `Title` and required `M-vSlider ID` (which you setup in M-vSlider Setup in WP Admin)
+In the Appearance -> Widgets in WordPress 3.0.1 you'll find the `M-vSlider - Image Slider` widget. After adding it to your sidebar you can enter an optional `Title` and select a `M-vSlider ID` (which you setup in M-vSlider Setup in WP Admin)
 
 = Shortcode =
 
@@ -25,6 +25,9 @@ Insert the slider in your pages or posts with this shortcode
 Insert this code in your template/theme pages. (if you have installed php-exec plugin then you can insert this code in your post or page too)
 
 `<?php if (function_exists('rslider')) { rslider(x); }?>` (where `x` is slider ID)
+
+= Special Mention =
+`You can copy the Shortcode and Template/PHP code from sliders listing table (Plugin Admin Home), mentioned for each slider.`
 
 == Installation ==
 
@@ -50,6 +53,13 @@ You'll find it in the table at Plugin Home page, 2nd column of table. (Please se
 
 = 1.0.0 =
 First release
+
+= 1.1.0 =
+First upgrade
+1. Added option to open slider/banner link in new window/tab.
+2. In Widget, instead of typing a Slider ID, HTML select box given for easy selection, which lists all the sliders setup.
+3. Two new columns added in slider listing table in admin area, for Shortcode and Template code.
+4. Reduced columns in DB table.
 
 == Upgrade Notice ==
 
