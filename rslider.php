@@ -9,10 +9,7 @@
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
  */
-?>
 
-
-<?php
 // Load jQuery from WordPress
 function rslider_loadJquery() {
     wp_enqueue_script('jquery-ui-tabs', 'js/ui.tabs.js', array('jquery'));
@@ -481,10 +478,11 @@ function rslider_install() {
                         }
                     }
                 }
-
-                $updatequery = " UPDATE $table_slider SET `rs_images` = '" . serialize($rs_images) . "' ";
-                $updatequery .= " WHERE rs_id = " . $myslider['rs_id'];
-                $wpdb->query($updatequery);
+		$wpdb->update( 	$table_slider, 
+						array( 'rs_images' => serialize($rs_images) ), 
+						array( 'rs_id' => $myslider['rs_id'] ), 
+						array( '%s' ), 
+						array( '%d' ) );
             }
 
             // #3 -> remove all current image columns
