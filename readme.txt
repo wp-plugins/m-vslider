@@ -61,6 +61,10 @@ First upgrade
 3. Two new columns added in slider listing table in admin area, for Shortcode and Template code.
 4. Reduced columns in DB table.
 
+= 1.1.1 =
+Second (minor) upgrade
+1. Fixed the "header already sent" error on plugin Re-activation.
+
 == Upgrade Notice ==
 
 N/A
