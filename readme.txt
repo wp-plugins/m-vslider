@@ -4,7 +4,7 @@ Donate link: http://mamirulamin.wordpress.com/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
 Tested up to: 3.1.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 
 == Description ==
 
@@ -27,7 +27,7 @@ Insert this code in your template/theme pages. (if you have installed php-exec p
 `<?php if (function_exists('rslider')) { rslider(x); }?>` (where `x` is slider ID)
 
 = Special Mention =
-`You can copy the Shortcode and Template/PHP code from sliders listing table (Plugin Admin Home), mentioned for each slider.`
+You can copy the Shortcode and Template/PHP code from sliders listing table (Plugin Admin Home), mentioned for each slider.
 
 == Installation ==
 
