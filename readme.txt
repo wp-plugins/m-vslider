@@ -1,6 +1,6 @@
 === M-vSlider ===
 Contributors: mamirulamin
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=mamirulamin%40gmail%2ecom&lc=GB&item_name=M%2dvSlider&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
+Donate link: http://www.shaukatkhanum.org.pk/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
 Tested up to: 3.1.2
