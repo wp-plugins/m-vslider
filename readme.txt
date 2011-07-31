@@ -3,8 +3,8 @@ Contributors: mamirulamin
 Donate link: http://www.shaukatkhanum.org.pk/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
-Tested up to: 3.1.2
-Stable tag: 1.1.1
+Tested up to: 3.2.1
+Stable tag: 1.1.2
 
 == Description ==
 
@@ -64,6 +64,10 @@ First upgrade
 = 1.1.1 =
 Second (minor) upgrade
 1. Fixed the "header already sent" error on plugin Re-activation.
+
+= 1.1.2 =
+Third (minor) upgrade
+1. Fixed the issue with output slider at the start of post/page, when using shortcode in a post/page.
 
 == Upgrade Notice ==
 

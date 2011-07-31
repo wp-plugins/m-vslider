@@ -4,7 +4,7 @@
   Plugin URI: http://www.seovalley.com.pk/m-vslider/
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin. M-vSlider is multi sliders clone of vSlider (http://www.vibethemes.com/wordpress-plugins/vslider-wordpress-image-slider-plugin/)
   Author: M. Amir Ul Amin
-  Version: 1.1.1
+  Version: 1.1.2
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -109,6 +109,19 @@ function rslider($atts = 0) {
     }
 }
 
+function get_rslider($atts = 0) {
+    
+    ob_start(); // start buffer
+    rslider($atts);
+    $content = ob_get_contents(); // assign buffer contents to variable
+    ob_end_clean(); // end buffer and remove buffer contents
+    return $content;
+}
+
+// Add M-vSlider Short Code
+add_shortcode('m-vslider', 'get_rslider');
+
+
 // Register M-vSlider As Widget
 add_action('widgets_init', create_function('', "register_widget('rslider_widget');"));
 
@@ -165,9 +178,6 @@ class rslider_widget extends WP_Widget {
     }
 
 }
-
-// Add M-vSlider Short Code
-add_shortcode('m-vslider', 'rslider');
 
 // Add The Option Page to WordPress Dashboard
 function rslider_addPage() {
