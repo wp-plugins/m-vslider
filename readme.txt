@@ -1,10 +1,10 @@
 === M-vSlider ===
 Contributors: mamirulamin
-Donate link: http://mamirulamin.wordpress.com/
+Donate link: http://www.shaukatkhanum.org.pk/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
-Tested up to: 3.1.2
-Stable tag: 1.1.0
+Tested up to: 3.2.1
+Stable tag: 1.1.2
 
 == Description ==
 
@@ -27,7 +27,7 @@ Insert this code in your template/theme pages. (if you have installed php-exec p
 `<?php if (function_exists('rslider')) { rslider(x); }?>` (where `x` is slider ID)
 
 = Special Mention =
-`You can copy the Shortcode and Template/PHP code from sliders listing table (Plugin Admin Home), mentioned for each slider.`
+You can copy the Shortcode and Template/PHP code from sliders listing table (Plugin Admin Home), mentioned for each slider.
 
 == Installation ==
 
@@ -60,6 +60,14 @@ First upgrade
 2. In Widget, instead of typing a Slider ID, HTML select box given for easy selection, which lists all the sliders setup.
 3. Two new columns added in slider listing table in admin area, for Shortcode and Template code.
 4. Reduced columns in DB table.
+
+= 1.1.1 =
+Second (minor) upgrade
+1. Fixed the "header already sent" error on plugin Re-activation.
+
+= 1.1.2 =
+Third (minor) upgrade
+1. Fixed the issue with output slider at the start of post/page, when using shortcode in a post/page.
 
 == Upgrade Notice ==
 
