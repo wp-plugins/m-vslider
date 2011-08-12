@@ -189,6 +189,7 @@ function rslider_page() {
 
     global $wpdb;
     global $table_slider;
+    $rs_config_count = 5;
     if ($_GET['rs_action'] == 'rs_remove') {
         $wpdb->query("DELETE FROM $table_slider WHERE rs_id = '" . $_GET['rs_id'] . "'");
         $_GET['rs_id'] = '';
@@ -321,9 +322,9 @@ function rslider_page() {
                 $updatequery .= " rs_type = '" . $_POST['rs_type'] . "',";
             }
 
-
+			$rs_count = $_POST['rs_totalimgs']>$rs_config_count?$_POST['rs_totalimgs']:$rs_config_count;
             $rs_images = array();
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < $rs_count; $i++) {
                 if ($_POST["rs_img$i"]) {
                     $rs_images[] = array('img' => $_POST["rs_img$i"], 'url' => $_POST["rs_lnk$i"], 'blank' => array_key_exists("rs_bnk$i", $_POST));
                 }
@@ -363,6 +364,8 @@ function rslider_page() {
         if ($rs_css == "") {
             $rs_css = "margin: 0px 0px 0px 0px; padding: 0; border: none;";
         }
+        
+        $rs_count = count($rs_images) > $rs_config_count? count($rs_images): $rs_config_count;
         ?>
 
         <div class="wrap" id="rslider-panel"><div id="icon-options-general" class="icon32"><br /></div>
@@ -418,7 +421,7 @@ function rslider_page() {
                         <h3><?php _e("Images Setup"); ?></h3>
                         <div class="inside">
                             <?php
-                            for ($i = 0; $i < 10; $i++) {
+                            for ($i = 0; $i < $rs_count; $i++) {
                                 ?>
                                 <p style="background-color:#<?php echo ($i%2?'E0E6ED;border: 1px dashed #888':'E6EDE0');?>; padding:10px;"><?php _e("Image " . ($i + 1) . " path:"); ?>
                                     <input type="text" name="rs_img<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['img']); ?>" style="width:100%;" />
@@ -429,6 +432,9 @@ function rslider_page() {
                                 <?php
                             }
                             ?>
+                            <div id="rs_divinside"></div>
+                            <p><input type="hidden" name="rs_totalimgs" id="rs_totalimgs" value="<?php echo $rs_count;?>" /></p>
+                            <p><input type="button" class="button" name="rs_addnewimg" id="rs_addnewimg" value="<?php _e('Add Another Image') ?>" /></p>
                             <p><input type="submit" class="button" name="save" value="<?php _e('Update Options') ?>" /></p>
                         </div>
                     </div>
@@ -541,8 +547,23 @@ function rslider_adminCSS() {
     <script type="text/javascript">
         /*** M-vSlider Init ***/
         jQuery.noConflict();
-        jQuery(document).ready(function(){
-    <?php
+        jQuery(document).ready(function() {
+                jQuery('#rs_addnewimg').click( function(e) {
+                        e.preventDefault();
+                        var rs_totalimgs = jQuery('#rs_totalimgs').attr('value');
+                        rs_totalimgs *= 1;
+                        if (rs_totalimgs)
+                        {
+                            jQuery('#rs_divinside').append( '<p style="background-color:#'+ (rs_totalimgs % 2 == 1?'E0E6ED;border: 1px dashed #888':'E6EDE0') +';padding:10px;">Image ' +(rs_totalimgs + 1) + ' path:' +
+                                                            '<input type="text" name="rs_img' + rs_totalimgs + '" style="width:100%;" />' + 
+                                                            'Image ' + (rs_totalimgs + 1) + ' links to:' +
+                                                            '<input type="text" name="rs_lnk' + rs_totalimgs + '" style="width:100%;" />' +
+                                                            '<input type="checkbox" name="rs_bnk' + rs_totalimgs + '" id="rs_bnk' + rs_totalimgs + '" value="' + rs_totalimgs + '" />'+
+                                                            '<label for="rs_bnk' + rs_totalimgs + '"><em>Open link in New Tab/Window</em></label></p>');
+                            jQuery('#rs_totalimgs').attr('value',rs_totalimgs + 1);
+                        }
+                });
+<?php
     global $wpdb;
     global $table_slider;
     $mainsql = " SELECT * FROM $table_slider order by rs_id";
