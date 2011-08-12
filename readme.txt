@@ -4,7 +4,7 @@ Donate link: http://www.shaukatkhanum.org.pk/
 Tags: banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
 Tested up to: 3.2.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 
 == Description ==
 
@@ -68,6 +68,10 @@ Second (minor) upgrade
 = 1.1.2 =
 Third (minor) upgrade
 1. Fixed the issue with output slider at the start of post/page, when using shortcode in a post/page.
+
+= 1.1.3 =
+Fourth upgrade
+1. Unlimited images now for a slider. Default number of images for a slider is '5', you can add as many as you want by pressing 'Add Another Image' button.
 
 == Upgrade Notice ==
 
