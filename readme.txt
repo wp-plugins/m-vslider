@@ -1,7 +1,7 @@
 === M-vSlider ===
 Contributors: mamirulamin
 Donate link: http://www.shaukatkhanum.org.pk/
-Tags: banner, slider, sidebar, widget, plugin
+Tags: multiple sliders. banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
 Tested up to: 3.2.1
 Stable tag: 1.1.3
@@ -55,22 +55,22 @@ You'll find it in the table at Plugin Home page, 2nd column of table. (Please se
 First release
 
 = 1.1.0 =
-First upgrade
-1. Added option to open slider/banner link in new window/tab.
-2. In Widget, instead of typing a Slider ID, HTML select box given for easy selection, which lists all the sliders setup.
-3. Two new columns added in slider listing table in admin area, for Shortcode and Template code.
+First upgrade<br />
+1. Added option to open slider/banner link in new window/tab.<br />
+2. In Widget, instead of typing a Slider ID, HTML select box given for easy selection, which lists all the sliders setup.<br />
+3. Two new columns added in slider listing table in admin area, for Shortcode and Template code.<br />
 4. Reduced columns in DB table.
 
 = 1.1.1 =
-Second (minor) upgrade
+Second (minor) upgrade<br />
 1. Fixed the "header already sent" error on plugin Re-activation.
 
 = 1.1.2 =
-Third (minor) upgrade
+Third (minor) upgrade<br />
 1. Fixed the issue with output slider at the start of post/page, when using shortcode in a post/page.
 
 = 1.1.3 =
-Fourth upgrade
+Fourth upgrade<br />
 1. Unlimited images now for a slider. Default number of images for a slider is '5', you can add as many as you want by pressing 'Add Another Image' button.
 
 == Upgrade Notice ==
