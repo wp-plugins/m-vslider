@@ -4,7 +4,7 @@ Donate link: http://www.shaukatkhanum.org.pk/
 Tags: multiple sliders. banner, slider, sidebar, widget, plugin
 Requires at least: 3.0.1
 Tested up to: 3.2.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 
 == Description ==
 
@@ -72,6 +72,9 @@ Third (minor) upgrade<br />
 = 1.1.3 =
 Fourth upgrade<br />
 1. Unlimited images now for a slider. Default number of images for a slider is '5', you can add as many as you want by pressing 'Add Another Image' button.
+
+= 1.1.4 =
+Same code as 1.1.3, had to make a copy because of wrong version showing on plugin page.
 
 == Upgrade Notice ==
 
