@@ -1,10 +1,10 @@
 <?php
 /*
   Plugin Name: M-vSlider
-  Plugin URI: http://www.seovalley.com.pk/m-vslider/
-  Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin. M-vSlider is multi sliders clone of vSlider (http://www.vibethemes.com/wordpress-plugins/vslider-wordpress-image-slider-plugin/)
+  Plugin URI: http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/
+  Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
-  Version: 1.1.2
+  Version: 1.1.4
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -97,7 +97,7 @@ function rslider($atts = 0) {
                                     </a>
                                 </li>
                                 <?php
-                            }
+                            }//if
                         }//foreach
                     }//if
                 }
