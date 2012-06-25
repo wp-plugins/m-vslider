@@ -4,29 +4,32 @@
   Plugin URI: http://mamirulamin.wordpress.com/2010/08/10/mvslider-multi-sliders-clone-of-vslider/
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
-  Version: 1.1.4
+  Author URI: http://www.nimble3.com
+  Version: 2.0.0
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
  */
 
 // Load jQuery from WordPress
-function rslider_loadJquery() {
-    wp_enqueue_script('jquery-ui-tabs', 'js/ui.tabs.js', array('jquery'));
+function rslider_enqueue() {
+    wp_enqueue_style('nivo-slider-style', WP_PLUGIN_URL . '/m-vslider/nivo-slider.css', null, null, 'screen');
+    wp_enqueue_style('nivo-slider-theme', WP_PLUGIN_URL . '/m-vslider/themes/default/default.css', null, null, 'screen');
+    wp_enqueue_script('jquery-nivo-slider', WP_PLUGIN_URL . '/m-vslider/jquery.nivo.slider.js', array('jquery'));
 }
 
 // M-vSlider Theme Head
 function rslider_head() {
     global $wpdb;
     global $table_slider;
-    $rslider_js = (WP_PLUGIN_URL . '/m-vslider/js/rslider.js');
 
     $mainsql = " SELECT * FROM $table_slider order by rs_id";
 
     if ($mainrows = $wpdb->get_results($mainsql)) {
-?>
-        <script type="text/javascript" src="<?php echo $rslider_js; ?>"></script>
-    <?php
+        ?>
+        <?php
+        $rs_style_tag = "";
+        $rs_script_tag = "";
         foreach ($mainrows as $myslider) {
             $rs_id = $myslider->rs_id;
             $rs_name = $myslider->rs_name;
@@ -35,36 +38,37 @@ function rslider_head() {
             $rs_speed = $myslider->rs_speed;
             $rs_animstyle = $myslider->rs_animstyle;
             $rs_css = $myslider->rs_css;
-            $rs_timeout = $myslider->rs_timeout;
+            $rs_timeout = $myslider->rs_timeout * 1000;
             $rs_type = $myslider->rs_type;
-    ?>
-
-            <!-- Start M-vSlider -->
-            <style type="text/css">
-                #sliderbody<?php echo $rs_id; ?>, #sliderbody<?php echo $rs_id; ?> img {width: <?php echo $rs_width; ?>px;height: <?php echo $rs_height; ?>px;}
-                #rslider<?php echo $rs_id; ?> {<?php echo $rs_css; ?>}
-                #rslider<?php echo $rs_id; ?> {height: <?php echo $rs_height; ?>px;overflow: hidden;}
-                #rslider<?php echo $rs_id; ?> ul {list-style: none !important;margin: 0 !important;padding: 0 !important;}
-                #rslider<?php echo $rs_id; ?> ul li {list-style: none !important;margin: 0 !important;padding: 0 !important;}
-                #sliderbody<?php echo $rs_id; ?> {overflow: hidden !important;}
-                #sliderbody<?php echo $rs_id; ?> img {-ms-interpolation-mode: bicubic;}
-            </style>
-            <script type="text/javascript">
-                /*** M-vSlider Init ***/
-                jQuery.noConflict();
-                jQuery(document).ready(function(){
-                    jQuery('ul#sliderbody<?php echo $rs_id; ?>').innerfade({
-                        animationtype: '<?php echo $rs_animstyle; ?>',
-                        speed: <?php echo $rs_speed; ?>,
-                        timeout: <?php echo $rs_timeout; ?>000,
-                        type: '<?php echo $rs_type; ?>',
-                        containerheight: '<?php echo $rs_height; ?>px'
-                    });
-                });
-            </script>
-            <!-- End M-vSlider -->
-            <?php
+            $rs_type = $rs_type == "random_start" ? 'true' : 'false';
+            $rs_style_tag .= "#rslider$rs_id { width: {$rs_width}px; height: {$rs_height}px; $rs_css }\n";
+            $rs_script_tag .= "jQuery('#rslider$rs_id').nivoSlider({ 
+                                    effect: '$rs_animstyle',
+                                    slices: 15, 
+                                    boxCols: 8, 
+                                    boxRows: 4, 
+                                    animSpeed: $rs_speed, 
+                                    pauseTime: $rs_timeout,
+                                    directionNav: false, 
+                                    directionNavHide: true, 
+                                    controlNav: false, 
+                                    controlNavThumbs: false,
+                                    pauseOnHover: true, 
+                                    randomStart: $rs_type
+                                });\n";
         }
+        ?>
+        <style type="text/css">
+        <?php //echo $rs_style_tag; ?>
+        </style>
+        <script type="text/javascript">
+            /*** M-vSlider Init ***/
+            jQuery.noConflict();
+            jQuery(window).load(function(){
+        <?php echo $rs_script_tag; ?>
+            });
+        </script>
+        <?php
     }
 }
 
@@ -79,38 +83,34 @@ function rslider($atts = 0) {
     global $table_slider;
     $rs_sql = " SELECT * FROM $table_slider WHERE rs_id ='$rs_id'";
     if ($rs_rows = $wpdb->get_results($rs_sql)) {
-        ?>
-
-        <div id="rslider<?php echo $rs_id; ?>">
-            <ul id="sliderbody<?php echo $rs_id; ?>">
-                <?php
-                if ($rs_rows[0]) {
-                    $rs_row = $rs_rows[0];
+        if ($rs_rows[0]) {
+            $rs_row = $rs_rows[0];
+            ?>
+            <div class="slider-wrapper" style="<?php echo "width: {$rs_row->rs_width}px; height: {$rs_row->rs_height}px;";?>">
+                <div id="rslider<?php echo $rs_id; ?>" class="nivoSlider">
+                    <?php
                     $rs_images = unserialize($rs_row->rs_images);
                     if (!empty($rs_images)) {
                         foreach ($rs_images as $rs_image) {
                             if ($rs_image['img']) {
                                 ?>
-                                <li>
-                                    <a href="<?php echo stripslashes($rs_image['url']); ?>" <?php echo (($rs_image['blank']) ? ' target="_blank" ' : ''); ?>>
-                                        <img src="<?php echo stripslashes($rs_image['img']); ?>" alt="featured" class="rsliderImg" />
-                                    </a>
-                                </li>
+                                <a href="<?php echo stripslashes($rs_image['url']); ?>" <?php echo (($rs_image['blank']) ? ' target="_blank" ' : ''); ?>>
+                                    <img src="<?php echo stripslashes($rs_image['img']); ?>" alt="<?php echo $rs_image['cap']; ?>" title="<?php echo $rs_image['cap']; ?>" />
+                                </a>
                                 <?php
                             }//if
                         }//foreach
                     }//if
-                }
-                ?>
-            </ul>
-        </div>
-
-        <?php
+                    ?>
+                </div>
+            </div>
+            <?php
+        }
     }
 }
 
 function get_rslider($atts = 0) {
-    
+
     ob_start(); // start buffer
     rslider($atts);
     $content = ob_get_contents(); // assign buffer contents to variable
@@ -120,7 +120,6 @@ function get_rslider($atts = 0) {
 
 // Add M-vSlider Short Code
 add_shortcode('m-vslider', 'get_rslider');
-
 
 // Register M-vSlider As Widget
 add_action('widgets_init', create_function('', "register_widget('rslider_widget');"));
@@ -181,7 +180,7 @@ class rslider_widget extends WP_Widget {
 
 // Add The Option Page to WordPress Dashboard
 function rslider_addPage() {
-    add_menu_page('M-vSlider Setup', 'M-vSlider Setup', 8, __FILE__, 'rslider_page');
+    add_menu_page('M-vSlider Setup', 'M-vSlider Setup', 'add_users', 'rslider_page', 'rslider_page');
 }
 
 // rslide Options Page
@@ -213,75 +212,78 @@ function rslider_page() {
         <div class="wrap" id="rslider-panel">
             <div id="icon-options-general" class="icon32"><br /></div>
             <h2><?php _e("M-vSlider - Home"); ?></h2>		
-            <div id='css_rs_main'><BR><BR>
+            <div id='css_rs_main'>
                 <table id='css_rs_table'>
-                    <tr>
-                        <th>Actions</th>
-                        <th>ID</th>
-                        <th>Shortcode</th>
-                        <th>Use in Template/PHP code</th>
-                        <th>Name</th>
-                        <th>W x H (px)</th>
-                        <th>Speed</th>
-                        <th>Timeout</th>
-                        <th>Anim. Style</th>
-                        <th>Type</th>
-                        <th>Custom CSS</th>
-                    </tr>
-                    <?php
-                    $style_a['fade'] = 'Fade';
-                    $style_a['slide'] = 'Slide';
+                    <thead>
+                        <tr>
+                            <th>Actions</th>
+                            <th>ID</th>
+                            <th>Shortcode</th>
+                            <th style="width:200px;">Use in Template/PHP code</th>
+                            <th>Name</th>
+                            <th>W x H (px)</th>
+                            <th>Speed</th>
+                            <th>Timeout</th>
+                            <th>Anim. Style</th>
+                            <th>Type</th>
+                            <th>Custom CSS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $style_a['fade'] = 'Fade';
+                        $style_a['slide'] = 'Slide';
 
-                    $type_a['sequence'] = 'Sequence';
-                    $type_a['random'] = 'Random';
-                    $type_a['random_start'] = 'Random Start';
+                        $type_a['sequence'] = 'Sequence';
+                        //$type_a['random'] = 'Random';
+                        $type_a['random_start'] = 'Random Start';
 
-                    if ($rows = $wpdb->get_results($sql)) {
-                        foreach ($rows as $row) {
-                            ?>
-                            <tr>
-                                <td align="center"><a href="<?php echo $currurl; ?>&rs_id=<?php echo $row->rs_id; ?>&rs_action=rs_edit" title="Edit"><img src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/edit.png"></a>&nbsp;&nbsp;<a href="<?php echo $currurl; ?>&rs_id=<?php echo $row->rs_id; ?>&rs_action=rs_remove" title="Delete" onclick="return confirm('Are you sure, you want to delete this slider?');"><img src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/remove.png"></a></td>
-                                <td><?php echo $row->rs_id; ?></td>
-                                <td>
-                                    <pre>[m-vslider id="<?php echo $row->rs_id; ?>"]</pre>
-                                </td>
-                                <td>
-<pre>
-&lt;?php if(function_exists('rslider')){
-    rslider(<?php echo $row->rs_id; ?>);
-} ?&gt;
-</pre>
-                                </td>
-                                <td><?php echo $row->rs_name; ?></td>
-                                <td><?php echo $row->rs_width . " x " . $row->rs_height; ?></td>
-                                <td><?php echo $row->rs_speed . " ms"; ?></td>
-                                <td><?php echo $row->rs_timeout . " sec"; ?></td>
-                                <td><?php echo $style_a[$row->rs_animstyle]; ?></td>
-                                <td><?php echo $type_a[$row->rs_type]; ?></td>
-                                <td>
-                                    <div id="screen-meta-links">
-                                        <div id="screen-meta">
-                                            <div class="hidden" id="contextual-css-wrap<?php echo $row->rs_id; ?>">
-                                                <div class="metabox-prefs"><pre><?php echo $row->rs_css; ?></pre></div>
-                                            </div>
-                                            <div id="screen-meta-links">
-                                                <div class="hide-if-no-js screen-meta-toggle" id="contextual-help-link-wrap">
-                                                    <a class="show-settings" id="contextual-css-link<?php echo $row->rs_id; ?>" href="#" style="color:red">Show CSS</a>
-                                                </div>
+                        if ($rows = $wpdb->get_results($sql)) {
+                            foreach ($rows as $row) {
+                                ?>
+                                <tr>
+                                    <td align="center"><a href="<?php echo $currurl; ?>&rs_id=<?php echo $row->rs_id; ?>&rs_action=rs_edit" title="Edit"><img src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/edit.png"></a>&nbsp;&nbsp;<a href="<?php echo $currurl; ?>&rs_id=<?php echo $row->rs_id; ?>&rs_action=rs_remove" title="Delete" onclick="return confirm('Are you sure, you want to delete this slider?');"><img src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/remove.png"></a></td>
+                                    <td><?php echo $row->rs_id; ?></td>
+                                    <td>
+                                        <pre>[m-vslider id="<?php echo $row->rs_id; ?>"]</pre>
+                                    </td>
+                                    <td style="text-align: left;">
+                                        <pre>
+&lt;?php 
+    if( function_exists('rslider') ) { 
+        rslider(<?php echo $row->rs_id; ?>);
+    } 
+?&gt;  
+                                        </pre>
+                                    </td>
+                                    <td><?php echo $row->rs_name; ?></td>
+                                    <td><?php echo $row->rs_width . " x " . $row->rs_height; ?></td>
+                                    <td><?php echo $row->rs_speed . " ms"; ?></td>
+                                    <td><?php echo $row->rs_timeout . " sec"; ?></td>
+                                    <td><?php echo $row->rs_animstyle; ?></td>
+                                    <td><?php echo $type_a[$row->rs_type]; ?></td>
+                                    <td>
+                                        <div class="hidden" id="contextual-css-wrap<?php echo $row->rs_id; ?>">
+                                            <div class="metabox-prefs"><pre><?php echo $row->rs_css; ?></pre></div>
+                                        </div>
+                                        <div id="screen-meta-links">
+                                            <div class="hide-if-no-js screen-meta-toggle" id="contextual-help-link-wrap">
+                                                <a class="show-settings" id="contextual-css-link<?php echo $row->rs_id; ?>" href="#" style="color:red">Show</a>
                                             </div>
                                         </div>
-                                </td>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="11">No Slider Configured!</td>
                             </tr>
                             <?php
                         }
-                    } else {
                         ?>
-                        <tr>
-                            <td colspan="11">No Slider Configured!</td>
-                        </tr>
-                        <?php
-                    }
-                    ?>
+                    </tbody>
                 </table>
                 <div>
                     <form method='post' action='<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>'>
@@ -322,11 +324,11 @@ function rslider_page() {
                 $updatequery .= " rs_type = '" . $_POST['rs_type'] . "',";
             }
 
-			$rs_count = $_POST['rs_totalimgs']>$rs_config_count?$_POST['rs_totalimgs']:$rs_config_count;
+            $rs_count = $_POST['rs_totalimgs'] > $rs_config_count ? $_POST['rs_totalimgs'] : $rs_config_count;
             $rs_images = array();
             for ($i = 0; $i < $rs_count; $i++) {
                 if ($_POST["rs_img$i"]) {
-                    $rs_images[] = array('img' => $_POST["rs_img$i"], 'url' => $_POST["rs_lnk$i"], 'blank' => array_key_exists("rs_bnk$i", $_POST));
+                    $rs_images[] = array('img' => $_POST["rs_img$i"], 'url' => $_POST["rs_lnk$i"], 'cap' => $_POST["rs_cap$i"], 'blank' => array_key_exists("rs_bnk$i", $_POST));
                 }
             }
 
@@ -364,14 +366,16 @@ function rslider_page() {
         if ($rs_css == "") {
             $rs_css = "margin: 0px 0px 0px 0px; padding: 0; border: none;";
         }
-        
-        $rs_count = count($rs_images) > $rs_config_count? count($rs_images): $rs_config_count;
+
+        $rs_count = count($rs_images) > $rs_config_count ? count($rs_images) : $rs_config_count;
         ?>
 
         <div class="wrap" id="rslider-panel"><div id="icon-options-general" class="icon32"><br /></div>
             <h2><?php _e("<a href='$currurl'>M-vSlider</a> &raquo; Slider Options"); ?></h2>
-            <?php if ($_REQUEST['save'])
-                echo '<div id="message" class="updated fade" style="width:750px;"><p><strong>Slider Options Saved.</strong></p></div>'; ?>
+            <?php
+            if ($_REQUEST['save'])
+                echo '<div id="message" class="updated fade" style="width: 95.5%;"><p><strong>Slider Options Saved.</strong></p></div>';
+            ?>
             <form method="post" action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>&updated=true">
                 <input type="hidden" name="tcOptions" value="process" />
                 <input type="hidden" name="rs_id" value="<?php echo $rs_id ?>" />
@@ -388,23 +392,46 @@ function rslider_page() {
                                 <?php _e("Height:"); ?>&nbsp;<input type="text" name="rs_height" value="<?php echo $rs_height; ?>" size="5" />&nbsp;px
                             </p>
                             <p>
-                                <?php _e("Speed:"); ?>&nbsp;<input type="text" name="rs_speed" value="<?php echo $rs_speed; ?>" size="5" />&nbsp;<?php _e("milliseconds"); ?>&nbsp;&nbsp;
-                                <?php _e("Animation:"); ?>&nbsp;
+                                <?php _e("Animation/Transition:"); ?>&nbsp;
                                 <select name="rs_animstyle">
-                                    <option style="padding-right:10px;" value="fade" <?php selected('fade', $rs_animstyle); ?>><?php _e("Fade"); ?></option>
-                                    <option style="padding-right:10px;" value="slide" <?php selected('slide', $rs_animstyle); ?>><?php _e("Slide"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceDown" <?php selected('sliceDown', $rs_animstyle); ?>><?php _e("sliceDown"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceDownLeft" <?php selected('sliceDownLeft', $rs_animstyle); ?>><?php _e("sliceDownLeft"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceUp" <?php selected('sliceUp', $rs_animstyle); ?>><?php _e("sliceUp"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceUpLeft" <?php selected('sliceUpLeft', $rs_animstyle); ?>><?php _e("sliceUpLeft"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceUpDown" <?php selected('sliceUpDown', $rs_animstyle); ?>><?php _e("sliceUpDown"); ?></option>
+                                    <option style="padding-right:10px;" value="sliceUpDownLeft" <?php selected('sliceUpDownLeft', $rs_animstyle); ?>><?php _e("sliceUpDownLeft"); ?></option>
+                                    <option style="padding-right:10px;" value="fold" <?php selected('fold', $rs_animstyle); ?>><?php _e("fold"); ?></option>
+                                    <option style="padding-right:10px;" value="fade" <?php selected('fade', $rs_animstyle); ?>><?php _e("fade"); ?></option>
+                                    <option style="padding-right:10px;" value="random" <?php selected('random', $rs_animstyle); ?>><?php _e("random"); ?></option>
+                                    <option style="padding-right:10px;" value="slideInRight" <?php selected('slideInRight', $rs_animstyle); ?>><?php _e("slideInRight"); ?></option>
+                                    <option style="padding-right:10px;" value="slideInLeft" <?php selected('slideInLeft', $rs_animstyle); ?>><?php _e("slideInLeft"); ?></option>
+                                    <option style="padding-right:10px;" value="boxRandom" <?php selected('boxRandom', $rs_animstyle); ?>><?php _e("boxRandom"); ?></option>
+                                    <option style="padding-right:10px;" value="boxRain" <?php selected('boxRain', $rs_animstyle); ?>><?php _e("boxRain"); ?></option>
+                                    <option style="padding-right:10px;" value="boxRainReverse" <?php selected('boxRainReverse', $rs_animstyle); ?>><?php _e("boxRainReverse"); ?></option>
+                                    <option style="padding-right:10px;" value="boxRainGrow" <?php selected('boxRainGrow', $rs_animstyle); ?>><?php _e("boxRainGrow"); ?></option>
+                                    <option style="padding-right:10px;" value="boxRainGrowReverse" <?php selected('boxRainGrowReverse', $rs_animstyle); ?>><?php _e("boxRainGrowReverse"); ?></option>
                                 </select>
                             </p>
-                            <p><?php _e("Timeout:"); ?>&nbsp;<input type="text" name="rs_timeout" value="<?php echo $rs_timeout; ?>" size="5" />&nbsp;<?php _e("seconds"); ?>&nbsp;&nbsp;
-                                <?php _e("Type:"); ?>&nbsp;
+                            <p>
+                                <?php _e("Start From:"); ?>&nbsp;<img title="Start from first slide (Sequenece) or a random slide (Random Start)" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;
                                 <select name="rs_type">
                                     <option style="padding-right:10px;" value="sequence" <?php selected('sequence', $rs_type); ?>><?php _e("Sequence"); ?></option>
-                                    <option style="padding-right:10px;" value="random" <?php selected('random', $rs_type); ?>><?php _e("Random"); ?></option>
+                                    <!--<option style="padding-right:10px;" value="random" <?php selected('random', $rs_type); ?>><?php _e("Random"); ?></option>-->
                                     <option style="padding-right:10px;" value="random_start" <?php selected('random_start', $rs_type); ?>><?php _e("Random Start"); ?></option>
                                 </select>
                             </p>
+                            <p>
+                                <?php _e("Speed:"); ?>&nbsp;<img title="Slide transition speed" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" name="rs_speed" value="<?php echo $rs_speed; ?>" size="5" id="rs_speed" />&nbsp;<?php _e("milliseconds"); ?>
+                                <br />
+                            <div id="rs_speed-slider"> </div>
+                            </p>
+                            <p>
+                                <?php _e("Timeout:"); ?>&nbsp;<img title="How long each slide will show" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" id="rs_timeout" name="rs_timeout" value="<?php echo $rs_timeout; ?>" size="5" />&nbsp;<?php _e("seconds"); ?>
+                                <br />
+                            <div id="rs_timeout-slider"> </div>
+                            </p>
                         </div>
-                       <h3><?php _e("Custom CSS Settings"); ?></h3>
+                        <h3><?php _e("Custom CSS Settings"); ?></h3>
                         <div class="inside">
                             <p>Enter here custom CSS for this Slider:<br />
                                 <textarea name="rs_css" style="width:350px;" rows="4"><?php echo stripslashes($rs_css); ?></textarea>
@@ -423,17 +450,20 @@ function rslider_page() {
                             <?php
                             for ($i = 0; $i < $rs_count; $i++) {
                                 ?>
-                                <p style="background-color:#<?php echo ($i%2?'E0E6ED;border: 1px dashed #888':'E6EDE0');?>; padding:10px;"><?php _e("Image " . ($i + 1) . " path:"); ?>
+                                <p style="background-color:#<?php echo ($i % 2 ? 'E0E6ED;border: 1px dashed #888' : 'E6EDE0'); ?>; padding:10px;">
+                                    <?php _e("Image " . ($i + 1) . " path:"); ?>
                                     <input type="text" name="rs_img<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['img']); ?>" style="width:100%;" />
                                     <?php _e("Image " . ($i + 1) . " links to:"); ?>
                                     <input type="text" name="rs_lnk<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['url']); ?>" style="width:100%;" />
+                                    <?php _e("Image " . ($i + 1) . " caption:"); ?>
+                                    <input type="text" name="rs_cap<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['cap']); ?>" style="width:100%;" />
                                     <input type="checkbox" name="rs_bnk<?php echo $i; ?>" id="rs_bnk<?php echo $i; ?>" <?php echo ($rs_images[$i]['blank'] ? ' checked ' : ''); ?> value="<?php echo $i; ?>" /> <label for="rs_bnk<?php echo $i; ?>"><em>Open link in New Tab/Window</em></label>
                                 </p>
                                 <?php
                             }
                             ?>
                             <div id="rs_divinside"></div>
-                            <p><input type="hidden" name="rs_totalimgs" id="rs_totalimgs" value="<?php echo $rs_count;?>" /></p>
+                            <p><input type="hidden" name="rs_totalimgs" id="rs_totalimgs" value="<?php echo $rs_count; ?>" /></p>
                             <p><input type="button" class="button" name="rs_addnewimg" id="rs_addnewimg" value="<?php _e('Add Another Image') ?>" /></p>
                             <p><input type="submit" class="button" name="save" value="<?php _e('Update Options') ?>" /></p>
                         </div>
@@ -494,11 +524,7 @@ function rslider_install() {
                         }
                     }
                 }
-		$wpdb->update( 	$table_slider, 
-						array( 'rs_images' => serialize($rs_images) ), 
-						array( 'rs_id' => $myslider['rs_id'] ), 
-						array( '%s' ), 
-						array( '%d' ) );
+                $wpdb->update($table_slider, array('rs_images' => serialize($rs_images)), array('rs_id' => $myslider['rs_id']), array('%s'), array('%d'));
             }
 
             // #3 -> remove all current image columns
@@ -529,74 +555,56 @@ function rslider_install() {
     }
 }
 
-function rslider_adminCSS() {
-    ?>
-    <style type='text/css'>
-        #rslider-panel .metabox-holder {float: left;width: 380px;margin: 0px; padding:0px 10px 0px 0px;}
-        #rslider-panel .metabox-holder .postbox .inside {padding: 0 10px;background-color: #E6EDE0;}
-        #rslider-panel .metabox-holder .postbox .inside p{margin: 0px;padding: 1em 0;}
-        .red {font-weight: normal;color: #B80028;}
-        #css_rs_main, #css_rs_main div {border: 0;margin-top:15px}
-        #css_rs_main #screen-meta-links, #css_rs_main #screen-meta-links div {border: 0;margin-top:0px}
-        #css_rs_table {border-collapse:collapse;width:98%;font-size:11px;font-family:Arial;}
-        #css_rs_table, #css_rs_table th, #css_rs_table td{border: 1px solid #DDD;padding: 2px 2px 2px 5px;font-size:11px;font-family:Arial;vertical-align:middle;}
-        #css_rs_table td pre{font-size:10px;background-color:#FFB;color:#F00;}
-        #css_rs_table td {background-color: #FFF;}
-        #css_rs_table th {background-color: #EEE;}
-    </style>
-    <script type="text/javascript">
-        /*** M-vSlider Init ***/
-        jQuery.noConflict();
-        jQuery(document).ready(function() {
-                jQuery('#rs_addnewimg').click( function(e) {
-                        e.preventDefault();
-                        var rs_totalimgs = jQuery('#rs_totalimgs').attr('value');
-                        rs_totalimgs *= 1;
-                        if (rs_totalimgs)
-                        {
-                            jQuery('#rs_divinside').append( '<p style="background-color:#'+ (rs_totalimgs % 2 == 1?'E0E6ED;border: 1px dashed #888':'E6EDE0') +';padding:10px;">Image ' +(rs_totalimgs + 1) + ' path:' +
-                                                            '<input type="text" name="rs_img' + rs_totalimgs + '" style="width:100%;" />' + 
-                                                            'Image ' + (rs_totalimgs + 1) + ' links to:' +
-                                                            '<input type="text" name="rs_lnk' + rs_totalimgs + '" style="width:100%;" />' +
-                                                            '<input type="checkbox" name="rs_bnk' + rs_totalimgs + '" id="rs_bnk' + rs_totalimgs + '" value="' + rs_totalimgs + '" />'+
-                                                            '<label for="rs_bnk' + rs_totalimgs + '"><em>Open link in New Tab/Window</em></label></p>');
-                            jQuery('#rs_totalimgs').attr('value',rs_totalimgs + 1);
-                        }
-                });
-<?php
-    global $wpdb;
-    global $table_slider;
-    $mainsql = " SELECT * FROM $table_slider order by rs_id";
+function rslider_admin_enqueue() {
 
-    if ($mainrows = $wpdb->get_results($mainsql)) {
-        foreach ($mainrows as $myslider) {
-            $rs_id = $myslider->rs_id;
-            ?>
-                            jQuery('#contextual-css-link<?php echo $rs_id; ?>').click(function(e) {
-                                e.preventDefault();
-                                if (jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').hasClass('contextual-help-open'))
-                                {
-                                    jQuery(this).text('Show CSS');
-                                    jQuery(this).css('background-position', 'right top');
-                                    jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').removeClass('contextual-help-open');
-                                    jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').hide();
-                                }
-                                else
-                                {
-                                    jQuery(this).text('Hide CSS');
-                                    jQuery(this).css('background-position', 'right bottom');
-                                    jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').addClass('contextual-help-open');
-                                    jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').show();
-                                }
-                            });
-            <?php
-        } //foreach
-    }//if
-    ?>
-                    		
-        });
-    </script>
-    <?php
+    if ($_REQUEST['page'] == 'rslider_page') {
+        wp_enqueue_style('rslider-admin-style', WP_PLUGIN_URL . '/m-vslider/rslider-admin.css', null, null, 'screen');
+        wp_enqueue_style('rslider-admin-ui-slider', WP_PLUGIN_URL . '/m-vslider/jquery.ui.slider.css');
+        wp_enqueue_style('rslider-admin-ui-theme', WP_PLUGIN_URL . '/m-vslider/jquery.ui.theme.css');
+        wp_enqueue_script('jquery-ui-slider', 'js/ui.slider.js', array('jquery'));
+        wp_enqueue_script('rslider-admin-script', WP_PLUGIN_URL . '/m-vslider/rslider-admin.js', array('jquery', 'jquery-ui-slider'));
+        ?>
+        <!-- M-vSlider - Start -->
+        <script type="text/javascript">
+            /*** M-vSlider Init ***/
+            jQuery.noConflict();
+            jQuery(document).ready(function() {
+        <?php
+        global $wpdb;
+        global $table_slider;
+        $mainsql = " SELECT * FROM $table_slider order by rs_id";
+
+        if ($mainrows = $wpdb->get_results($mainsql)) {
+            foreach ($mainrows as $myslider) {
+                $rs_id = $myslider->rs_id;
+                ?>
+                                jQuery('#contextual-css-link<?php echo $rs_id; ?>').click(function(e) {
+                                    e.preventDefault();
+                                    if (jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').hasClass('contextual-help-open'))
+                                    {
+                                        jQuery(this).text('Show');
+                                        jQuery(this).css('background-position', 'right top');
+                                        jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').removeClass('contextual-help-open');
+                                        jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').hide();
+                                    }
+                                    else
+                                    {
+                                        jQuery(this).text('Hide');
+                                        jQuery(this).css('background-position', 'right bottom');
+                                        jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').addClass('contextual-help-open');
+                                        jQuery('#contextual-css-wrap<?php echo $rs_id; ?>').show();
+                                    }
+                                });
+                <?php
+            } //foreach
+        }//if
+        ?>
+                                                    		
+            });
+        </script>
+        <!-- M-vSlider - End -->
+        <?php
+    }
 }
 
 global $wpdb;
@@ -606,8 +614,8 @@ $rslider_db_version = "1.1";
 $table_slider = $wpdb->prefix . 'rs_slider';
 
 register_activation_hook(__FILE__, 'rslider_install');
-add_action('wp_print_scripts', 'rslider_loadJquery');
+add_action('wp_enqueue_scripts', 'rslider_enqueue');
+add_action('admin_head', 'rslider_admin_enqueue');
 add_action('wp_head', 'rslider_head');
-add_action('admin_head', 'rslider_adminCSS');
 add_action('admin_menu', 'rslider_addPage');
 ?>
