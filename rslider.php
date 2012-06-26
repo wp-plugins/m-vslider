@@ -5,7 +5,7 @@
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
   Author URI: http://www.nimble3.com
-  Version: 2.0.0
+  Version: 2.0.1
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -44,9 +44,6 @@ function rslider_head() {
             $rs_style_tag .= "#rslider$rs_id { width: {$rs_width}px; height: {$rs_height}px; $rs_css }\n";
             $rs_script_tag .= "jQuery('#rslider$rs_id').nivoSlider({ 
                                     effect: '$rs_animstyle',
-                                    slices: 15, 
-                                    boxCols: 8, 
-                                    boxRows: 4, 
                                     animSpeed: $rs_speed, 
                                     pauseTime: $rs_timeout,
                                     directionNav: false, 
@@ -59,7 +56,7 @@ function rslider_head() {
         }
         ?>
         <style type="text/css">
-        <?php //echo $rs_style_tag; ?>
+        <?php echo $rs_style_tag; ?>
         </style>
         <script type="text/javascript">
             /*** M-vSlider Init ***/
