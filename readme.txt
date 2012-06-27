@@ -4,7 +4,7 @@ Donate link: http://www.shaukatkhanum.org.pk/
 Tags: multiple sliders, banner, slider, sidebar, widget, plugin, nivo, nivo slider, jquery slider, simple slider, easy to use slider
 Requires at least: 3.0.1
 Tested up to: 3.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
 == Description ==
 
