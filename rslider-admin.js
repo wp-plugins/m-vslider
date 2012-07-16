@@ -38,5 +38,16 @@ jQuery(document).ready(function() {
             jQuery('#rs_totalimgs').attr('value',rs_totalimgs + 1);
         }
     });
+    
+    jQuery('#rs_showdir').click(function(){
+        jQuery('#rs_showhover').attr('disabled', 'disabled');
+        if(jQuery(this).attr('checked') == "checked") 
+           jQuery('#rs_showhover').removeAttr('disabled');
+    });
+
+    jQuery('#rs_showhover').attr('disabled', 'disabled');
+    if(jQuery('#rs_showdir').attr('checked') == "checked") 
+        jQuery('#rs_showhover').removeAttr('disabled');
+
 });
             

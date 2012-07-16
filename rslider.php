@@ -14,7 +14,6 @@
 // Load jQuery from WordPress
 function rslider_enqueue() {
     wp_enqueue_style('nivo-slider-style', WP_PLUGIN_URL . '/m-vslider/nivo-slider.css', null, null, 'screen');
-    wp_enqueue_style('nivo-slider-theme', WP_PLUGIN_URL . '/m-vslider/themes/default/default.css', null, null, 'screen');
     wp_enqueue_script('jquery-nivo-slider', WP_PLUGIN_URL . '/m-vslider/jquery.nivo.slider.js', array('jquery'));
 }
 
@@ -32,6 +31,7 @@ function rslider_head() {
         $rs_script_tag = "";
         foreach ($mainrows as $myslider) {
             $rs_id = $myslider->rs_id;
+            $rs_options = unserialize($myslider->rs_options);
             $rs_name = $myslider->rs_name;
             $rs_width = $myslider->rs_width;
             $rs_height = $myslider->rs_height;
@@ -41,17 +41,20 @@ function rslider_head() {
             $rs_timeout = $myslider->rs_timeout * 1000;
             $rs_type = $myslider->rs_type;
             $rs_type = $rs_type == "random_start" ? 'true' : 'false';
+            $rs_showdir = $rs_options['rs_showdir'];
+            $rs_showdir = $rs_showdir ? 'true' : 'false';
+            $rs_shownav = $rs_options['rs_shownav'];
+            $rs_shownav = $rs_shownav ? 'true' : 'false';
+            $rs_showhover = $rs_options['rs_showhover'];
+            $rs_showhover = $rs_showhover && $rs_showdir ? 'true' : 'false';
             $rs_style_tag .= "#rslider$rs_id { width: {$rs_width}px; height: {$rs_height}px; $rs_css }\n";
             $rs_script_tag .= "jQuery('#rslider$rs_id').nivoSlider({ 
                                     effect: '$rs_animstyle',
-                                    slices: 15, 
-                                    boxCols: 8, 
-                                    boxRows: 4, 
                                     animSpeed: $rs_speed, 
                                     pauseTime: $rs_timeout,
-                                    directionNav: false, 
-                                    directionNavHide: true, 
-                                    controlNav: false, 
+                                    directionNav: $rs_showdir, 
+                                    directionNavHide: $rs_showhover, 
+                                    controlNav: $rs_shownav, 
                                     controlNavThumbs: false,
                                     pauseOnHover: true, 
                                     randomStart: $rs_type
@@ -59,7 +62,7 @@ function rslider_head() {
         }
         ?>
         <style type="text/css">
-        <?php //echo $rs_style_tag; ?>
+        <?php echo $rs_style_tag; ?>
         </style>
         <script type="text/javascript">
             /*** M-vSlider Init ***/
@@ -85,8 +88,11 @@ function rslider($atts = 0) {
     if ($rs_rows = $wpdb->get_results($rs_sql)) {
         if ($rs_rows[0]) {
             $rs_row = $rs_rows[0];
+            $rs_options = unserialize($rs_row->rs_options);
+            $rs_theme = $rs_options['rs_theme'];
+            wp_enqueue_style('nivo-slider-theme', WP_PLUGIN_URL . "/m-vslider/themes/$rs_theme/$rs_theme.css", null, null, 'screen');
             ?>
-            <div class="slider-wrapper" style="<?php echo "width: {$rs_row->rs_width}px; height: {$rs_row->rs_height}px;";?>">
+            <div class="slider-wrapper theme-<?php echo $rs_theme;?>" style="<?php echo "width: {$rs_row->rs_width}px;";?>">
                 <div id="rslider<?php echo $rs_id; ?>" class="nivoSlider">
                     <?php
                     $rs_images = unserialize($rs_row->rs_images);
@@ -300,6 +306,13 @@ function rslider_page() {
 
         if ('process' == $_POST['tcOptions']) {
 
+            $rs_options = array(
+                'rs_showdir' => $_POST['rs_showdir'],
+                'rs_shownav' => $_POST['rs_shownav'],
+                'rs_showhover' => $_POST['rs_showhover'],
+                'rs_theme' => $_POST['rs_theme']
+            );
+
             $updatequery = "UPDATE $table_slider SET rs_name='" . $_POST['rs_name'] . "',";
 
             if ($_POST['rs_width']) {
@@ -324,11 +337,18 @@ function rslider_page() {
                 $updatequery .= " rs_type = '" . $_POST['rs_type'] . "',";
             }
 
+            $updatequery .= " rs_options = '" . stripslashes(serialize($rs_options)) . "',";
+
             $rs_count = $_POST['rs_totalimgs'] > $rs_config_count ? $_POST['rs_totalimgs'] : $rs_config_count;
             $rs_images = array();
             for ($i = 0; $i < $rs_count; $i++) {
                 if ($_POST["rs_img$i"]) {
-                    $rs_images[] = array('img' => $_POST["rs_img$i"], 'url' => $_POST["rs_lnk$i"], 'cap' => $_POST["rs_cap$i"], 'blank' => array_key_exists("rs_bnk$i", $_POST));
+                    $rs_images[] = array(
+                        'img' => $_POST["rs_img$i"], 
+                        'url' => $_POST["rs_lnk$i"], 
+                        'cap' => $_POST["rs_cap$i"], 
+                        'blank' => array_key_exists("rs_bnk$i", $_POST)
+                    );
                 }
             }
 
@@ -350,6 +370,7 @@ function rslider_page() {
         $rs_timeout = $myslider->rs_timeout;
         $rs_type = $myslider->rs_type;
         $rs_images = unserialize($myslider->rs_images);
+        $rs_options = unserialize($myslider->rs_options);
 
         if ($rs_width == "") {
             $rs_width = 250;
@@ -366,6 +387,11 @@ function rslider_page() {
         if ($rs_css == "") {
             $rs_css = "margin: 0px 0px 0px 0px; padding: 0; border: none;";
         }
+        
+        $rs_showdir = $rs_options['rs_showdir'];
+        $rs_shownav = $rs_options['rs_shownav'];
+        $rs_showhover = $rs_options['rs_showhover'];
+        $rs_theme = $rs_options['rs_theme'];
 
         $rs_count = count($rs_images) > $rs_config_count ? count($rs_images) : $rs_config_count;
         ?>
@@ -413,6 +439,32 @@ function rslider_page() {
                                 </select>
                             </p>
                             <p>
+                                <?php _e("Theme:"); ?>&nbsp;
+                                <select name="rs_theme">
+                                    <?php 
+                                        if (is_dir(M_VSLIDER_DIR_THEMES_DIR))
+                                        {
+                                            $thd = dir(M_VSLIDER_DIR_THEMES_DIR);
+                                            while (false !== ($theme_name = $thd->read())) { 
+                                                echo M_VSLIDER_DIR_THEMES_DIR . $theme_name;
+                                                if( $theme_name == "." || $theme_name == ".." ) { continue; }
+                                    ?>
+                                                <option style="padding-right:10px;" value="<?php echo $theme_name;?>" <?php selected($theme_name, $rs_theme); ?>><?php echo ($theme_name); ?></option>
+                                    <?php                                                
+                                            }
+                                            $thd->close();                                            
+                                        }
+                                    ?>
+                                </select>
+                            </p>
+                            <p>
+                                <label><input type="checkbox" id="rs_showdir" name="rs_showdir" value="1" <?php echo ($rs_showdir?" checked='checked' ":""); ?> /> <?php _e("Show directions controls"); ?>&nbsp;</label><img title="Show Next and Previous controls" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;
+                                <label><input type="checkbox" id="rs_showhover" name="rs_showhover" value="1" <?php echo ($rs_showhover?" checked='checked' ":""); ?> /> <?php _e("Only show on hover"); ?></label>
+                            </p>
+                            <p>
+                                <label><input type="checkbox" name="rs_shownav" value="1" <?php echo ($rs_shownav?" checked='checked' ":""); ?> /> <?php _e("Show navigation controls"); ?></label>&nbsp;<img title="Show 1,2,3 navigation" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">
+                            </p>
+                            <p>
                                 <?php _e("Start From:"); ?>&nbsp;<img title="Start from first slide (Sequenece) or a random slide (Random Start)" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;
                                 <select name="rs_type">
                                     <option style="padding-right:10px;" value="sequence" <?php selected('sequence', $rs_type); ?>><?php _e("Sequence"); ?></option>
@@ -436,10 +488,9 @@ function rslider_page() {
                             <p>Enter here custom CSS for this Slider:<br />
                                 <textarea name="rs_css" style="width:350px;" rows="4"><?php echo stripslashes($rs_css); ?></textarea>
                             </p>
-                            <p><input type="submit" class="button" name="save" value="<?php _e('Update Options') ?>" /></p>
+                            <p><input type="submit" class="button-primary" name="save" value="<?php _e('Save Settings') ?>" /></p>
                         </div>
                     </div>
-                    <p><input type="submit" class="button-primary" name="save" value="<?php _e('Save Settings') ?>" /></p>
                 </div>
                 <!-- End First Column -->
                 <!-- Start Second Column -->
@@ -465,7 +516,7 @@ function rslider_page() {
                             <div id="rs_divinside"></div>
                             <p><input type="hidden" name="rs_totalimgs" id="rs_totalimgs" value="<?php echo $rs_count; ?>" /></p>
                             <p><input type="button" class="button" name="rs_addnewimg" id="rs_addnewimg" value="<?php _e('Add Another Image') ?>" /></p>
-                            <p><input type="submit" class="button" name="save" value="<?php _e('Update Options') ?>" /></p>
+                            <p><input type="submit" class="button-primary" name="save" value="<?php _e('Save Settings') ?>" /></p>
                         </div>
                     </div>
 
@@ -612,6 +663,8 @@ global $rslider_db_version;
 global $table_slider;
 $rslider_db_version = "1.1";
 $table_slider = $wpdb->prefix . 'rs_slider';
+define('M_VSLIDER_DIR', dirname(__FILE__));
+define('M_VSLIDER_DIR_THEMES_DIR', M_VSLIDER_DIR . "/themes/");
 
 register_activation_hook(__FILE__, 'rslider_install');
 add_action('wp_enqueue_scripts', 'rslider_enqueue');

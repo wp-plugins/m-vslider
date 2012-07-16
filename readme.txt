@@ -1,10 +1,10 @@
 === M-vSlider ===
 Contributors: mamirulamin
-Donate link: http://www.shaukatkhanum.org.pk/
+Donate link: http://www.nimble3.com/
 Tags: multiple sliders, banner, slider, sidebar, widget, plugin, nivo, nivo slider, jquery slider, simple slider, easy to use slider
 Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 2.0.0
+Tested up to: 3.4.1
+Stable tag: 2.1.0
 
 == Description ==
 
@@ -81,6 +81,12 @@ Second major upgrade<br />
 1. Based on most popular jQuery Nivo Slider.<br />
 2. Supports captions.<br />
 3. No more a clone of vSlider.<br />
+
+= 2.1.0 =
+Now supports 
+1. Directions controls.<br /> 
+2. Navigation controls.<br />
+3. Themes for Directions/Navigation controls.<br />
 
 == Upgrade Notice ==
 
