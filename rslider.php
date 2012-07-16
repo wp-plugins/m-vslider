@@ -5,7 +5,7 @@
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
   Author URI: http://www.nimble3.com
-  Version: 2.0.0
+  Version: 2.1.0
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
