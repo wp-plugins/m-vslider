@@ -5,7 +5,7 @@
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
   Author URI: http://www.nimble3.com
-  Version: 2.1.0
+  Version: 2.1.1
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -47,7 +47,9 @@ function rslider_head() {
             $rs_shownav = $rs_shownav ? 'true' : 'false';
             $rs_showhover = $rs_options['rs_showhover'];
             $rs_showhover = $rs_showhover && $rs_showdir ? 'true' : 'false';
-            $rs_style_tag .= "#rslider$rs_id { width: {$rs_width}px; height: {$rs_height}px; $rs_css }\n";
+            $rs_layout = $rs_options['rs_layout'];
+            $layout = !$rs_layout?"width: {$rs_width}px; height: {$rs_height}px;":"";
+            $rs_style_tag .= "#rslider$rs_id { $layout $rs_css }\n";
             $rs_script_tag .= "jQuery('#rslider$rs_id').nivoSlider({ 
                                     effect: '$rs_animstyle',
                                     animSpeed: $rs_speed, 
@@ -92,7 +94,7 @@ function rslider($atts = 0) {
             $rs_theme = $rs_options['rs_theme'];
             wp_enqueue_style('nivo-slider-theme', WP_PLUGIN_URL . "/m-vslider/themes/$rs_theme/$rs_theme.css", null, null, 'screen');
             ?>
-            <div class="slider-wrapper theme-<?php echo $rs_theme;?>" style="<?php echo "width: {$rs_row->rs_width}px;";?>">
+            <div class="slider-wrapper theme-<?php echo $rs_theme;?>" style="<?php echo !$rs_options['rs_layout']?"width: {$rs_row->rs_width}px;":"";?>">
                 <div id="rslider<?php echo $rs_id; ?>" class="nivoSlider">
                     <?php
                     $rs_images = unserialize($rs_row->rs_images);
@@ -202,7 +204,7 @@ function rslider_page() {
 
 
     if ($_POST['rs_addnew'] && $_POST['rs_name']) {
-        $rows_affected = $wpdb->insert($table_slider, array('rs_id' => '', 'rs_name' => $_POST['rs_name']));
+        $rows_affected = $wpdb->insert($table_slider, array('rs_id' => '', 'rs_name' => $_POST['rs_name'], 'rs_css' => 'margin: 0px 0px 0px 0px;padding: 0;border: none;'));
         if ($rows_affected == 1) {
             $_GET['rs_id'] = $wpdb->insert_id;
         }
@@ -310,6 +312,7 @@ function rslider_page() {
                 'rs_showdir' => $_POST['rs_showdir'],
                 'rs_shownav' => $_POST['rs_shownav'],
                 'rs_showhover' => $_POST['rs_showhover'],
+                'rs_layout' => $_POST['rs_layout'],
                 'rs_theme' => $_POST['rs_theme']
             );
 
@@ -369,6 +372,7 @@ function rslider_page() {
         $rs_css = $myslider->rs_css;
         $rs_timeout = $myslider->rs_timeout;
         $rs_type = $myslider->rs_type;
+        $rs_layout = $myslider->rs_layout;
         $rs_images = unserialize($myslider->rs_images);
         $rs_options = unserialize($myslider->rs_options);
 
@@ -391,6 +395,7 @@ function rslider_page() {
         $rs_showdir = $rs_options['rs_showdir'];
         $rs_shownav = $rs_options['rs_shownav'];
         $rs_showhover = $rs_options['rs_showhover'];
+        $rs_layout = $rs_options['rs_layout'];
         $rs_theme = $rs_options['rs_theme'];
 
         $rs_count = count($rs_images) > $rs_config_count ? count($rs_images) : $rs_config_count;
@@ -456,6 +461,7 @@ function rslider_page() {
                                         }
                                     ?>
                                 </select>
+                                <label><input type="checkbox" id="rs_layout" name="rs_layout" value="1" <?php echo ($rs_layout?" checked='checked' ":""); ?> /> <?php _e("Resposive?"); ?>&nbsp;</label><img title="If checked, it will use responsive layout instead of fixed width and height." src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;
                             </p>
                             <p>
                                 <label><input type="checkbox" id="rs_showdir" name="rs_showdir" value="1" <?php echo ($rs_showdir?" checked='checked' ":""); ?> /> <?php _e("Show directions controls"); ?>&nbsp;</label><img title="Show Next and Previous controls" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;
@@ -502,12 +508,13 @@ function rslider_page() {
                             for ($i = 0; $i < $rs_count; $i++) {
                                 ?>
                                 <p style="background-color:#<?php echo ($i % 2 ? 'E0E6ED;border: 1px dashed #888' : 'E6EDE0'); ?>; padding:10px;">
-                                    <?php _e("Image " . ($i + 1) . " path:"); ?>
-                                    <input type="text" name="rs_img<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['img']); ?>" style="width:100%;" />
-                                    <?php _e("Image " . ($i + 1) . " links to:"); ?>
-                                    <input type="text" name="rs_lnk<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['url']); ?>" style="width:100%;" />
-                                    <?php _e("Image " . ($i + 1) . " caption:"); ?>
-                                    <input type="text" name="rs_cap<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['cap']); ?>" style="width:100%;" />
+                                    <label for="rs_img<?php echo $i; ?>"><?php _e("Image " . ($i + 1) . " path: "); ?></label><img title="Either enter URL, or use 'Media Gallery' button to upload or insert path from gallery." src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png" /><br />
+                                    <input type="text" id="rs_img<?php echo $i; ?>" name="rs_img<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['img']); ?>" style="width:70%;" />
+                                    <input class="button upload_image_button" type="button" value="Media Gallery" rel="rs_img<?php echo $i; ?>"  style="width:20%;margin:0;" /><br />
+                                    <label for="rs_lnk<?php echo $i; ?>"><?php _e("Image " . ($i + 1) . " links to:"); ?></label>
+                                    <input type="text" id="rs_lnk<?php echo $i; ?>" name="rs_lnk<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['url']); ?>" style="width:100%;" />
+                                    <label for="rs_cap<?php echo $i; ?>"><?php _e("Image " . ($i + 1) . " caption:"); ?></label>
+                                    <input type="text" id="rs_cap<?php echo $i; ?>" name="rs_cap<?php echo $i; ?>" value="<?php echo stripslashes($rs_images[$i]['cap']); ?>" style="width:100%;" />
                                     <input type="checkbox" name="rs_bnk<?php echo $i; ?>" id="rs_bnk<?php echo $i; ?>" <?php echo ($rs_images[$i]['blank'] ? ' checked ' : ''); ?> value="<?php echo $i; ?>" /> <label for="rs_bnk<?php echo $i; ?>"><em>Open link in New Tab/Window</em></label>
                                 </p>
                                 <?php
@@ -541,22 +548,23 @@ function rslider_install() {
         $create_table_sql = "CREATE TABLE `$table_slider` (
 								`rs_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 								`rs_name` varchar(100) NOT NULL,
-								`rs_css` varchar(255) NOT NULL DEFAULT 'margin: 0px 0px 0px 0px; padding: 0; border: none;',
+								`rs_css` text,
 								`rs_width` smallint(6) NOT NULL DEFAULT '250',
 								`rs_height` smallint(6) NOT NULL DEFAULT '250',
 								`rs_speed` int(11) NOT NULL DEFAULT '1000',
-								`rs_animstyle` varchar(10) NOT NULL DEFAULT 'fade',
+								`rs_animstyle` varchar(50) NOT NULL DEFAULT 'fade',
 								`rs_timeout` smallint(6) NOT NULL DEFAULT '5',
-								`rs_type` varchar(15) NOT NULL DEFAULT 'sequence',
+								`rs_type` varchar(50) NOT NULL DEFAULT 'sequence',
 								`rs_images` blob NOT NULL,
 								`rs_options` blob NOT NULL,
 								PRIMARY KEY (`rs_id`),
 								UNIQUE KEY `rs_name` (`rs_name`)
 								) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
-        $wpdb->query($create_table_sql);
-        $rows_affected = $wpdb->insert($table_slider, array('rs_id' => '', 'rs_name' => 'Default Slider'));
-        update_option("rslider_db_version", $rslider_db_version);
+        if ($wpdb->query($create_table_sql)!== false) {
+            $rows_affected = $wpdb->insert($table_slider, array('rs_id' => '', 'rs_name' => 'Default Slider', 'rs_css' => 'margin: 0px 0px 0px 0px;padding: 0;border: none;'));
+            update_option("rslider_db_version", $rslider_db_version);
+        }
     } else {
         if ($cur_rslider_db_version == "1.0") { // If old DB version found then upgrade it
             // #1 -> add rs_images, and rs_options columns
@@ -600,9 +608,16 @@ function rslider_install() {
 							DROP `rs_lnk9`,
 							DROP `rs_img10`,
 							DROP `rs_lnk10`";
-            $wpdb->query($alterquery);
-            update_option("rslider_db_version", $rslider_db_version);
-        }
+            if ($wpdb->query($alterquery)!== false)
+                update_option("rslider_db_version", $rslider_db_version);
+        } elseif ($cur_rslider_db_version == "1.1") { // If old DB version is 1.1 then update DB Table
+            $alterquery = " ALTER TABLE $table_slider
+                                                    MODIFY `rs_css` text ,
+                                                    MODIFY `rs_animstyle` varchar(50) DEFAULT 'fade',
+                                                    MODIFY `rs_type` varchar(50) DEFAULT 'sequence'";
+            if ($wpdb->query($alterquery)!== false)
+                update_option("rslider_db_version", $rslider_db_version);
+        }//
     }
 }
 
@@ -612,14 +627,36 @@ function rslider_admin_enqueue() {
         wp_enqueue_style('rslider-admin-style', WP_PLUGIN_URL . '/m-vslider/rslider-admin.css', null, null, 'screen');
         wp_enqueue_style('rslider-admin-ui-slider', WP_PLUGIN_URL . '/m-vslider/jquery.ui.slider.css');
         wp_enqueue_style('rslider-admin-ui-theme', WP_PLUGIN_URL . '/m-vslider/jquery.ui.theme.css');
+        wp_enqueue_style('thickbox');
+        wp_enqueue_script('media-upload');
+        wp_enqueue_script('thickbox');
         wp_enqueue_script('jquery-ui-slider', 'js/ui.slider.js', array('jquery'));
-        wp_enqueue_script('rslider-admin-script', WP_PLUGIN_URL . '/m-vslider/rslider-admin.js', array('jquery', 'jquery-ui-slider'));
+        wp_enqueue_script('rslider-admin-script', WP_PLUGIN_URL . '/m-vslider/rslider-admin.js', array('jquery', 'jquery-ui-slider','media-upload','thickbox'));
         ?>
         <!-- M-vSlider - Start -->
         <script type="text/javascript">
             /*** M-vSlider Init ***/
             jQuery.noConflict();
             jQuery(document).ready(function() {
+				var imgfield='';
+				jQuery('.upload_image_button').click(function() {
+					imgfield = jQuery(this).attr('rel');
+					var imglabel = jQuery("label[for='"+imgfield+"']").text();
+					tb_show('', 'media-upload.php?type=image&amp;TB_iframe=true');
+					jQuery("#TB_iframeContent").load(function(){
+						var _this = jQuery(this);
+						jQuery("input[value='Insert into Post']", frames[_this.attr('name')].document).each(function(){jQuery(this).val('Insert as ' + imglabel);});
+					});
+					return false;
+				});
+
+				window.send_to_editor = function(html) {
+					imgurl = jQuery('img',html).attr('src');
+					jQuery('#'+imgfield).val(imgurl);
+					tb_remove();
+				}
+				 
+				
         <?php
         global $wpdb;
         global $table_slider;
@@ -661,7 +698,7 @@ function rslider_admin_enqueue() {
 global $wpdb;
 global $rslider_db_version;
 global $table_slider;
-$rslider_db_version = "1.1";
+$rslider_db_version = "1.2";
 $table_slider = $wpdb->prefix . 'rs_slider';
 define('M_VSLIDER_DIR', dirname(__FILE__));
 define('M_VSLIDER_DIR_THEMES_DIR', M_VSLIDER_DIR . "/themes/");
