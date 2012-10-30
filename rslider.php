@@ -5,7 +5,7 @@
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
   Author URI: http://www.nimble3.com
-  Version: 2.1.1
+  Version: 2.1.2
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -101,12 +101,17 @@ function rslider($atts = 0) {
                     if (!empty($rs_images)) {
                         foreach ($rs_images as $rs_image) {
                             if ($rs_image['img']) {
+								if ($rs_image['url']){ 
                                 ?>
-                                <a href="<?php echo stripslashes($rs_image['url']); ?>" <?php echo (($rs_image['blank']) ? ' target="_blank" ' : ''); ?>>
-                                    <img src="<?php echo stripslashes($rs_image['img']); ?>" alt="<?php echo $rs_image['cap']; ?>" title="<?php echo $rs_image['cap']; ?>" />
-                                </a>
+									<a href="<?php echo stripslashes($rs_image['url']); ?>" <?php echo (($rs_image['blank']) ? ' target="_blank" ' : ''); ?>>
+										<img src="<?php echo stripslashes($rs_image['img']); ?>" alt="<?php echo $rs_image['cap']; ?>" title="<?php echo $rs_image['cap']; ?>" />
+									</a>
                                 <?php
-                            }//if
+                                } else { ?>
+									<img src="<?php echo stripslashes($rs_image['img']); ?>" alt="<?php echo $rs_image['cap']; ?>" title="<?php echo $rs_image['cap']; ?>" />
+								<?php 
+								} //if url
+                            }//if img
                         }//foreach
                     }//if
                     ?>
