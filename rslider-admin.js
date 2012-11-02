@@ -1,6 +1,62 @@
 jQuery.noConflict();
 jQuery(document).ready(function() {
     
+    jQuery('#rs_slices-slider').slider({
+        value: jQuery( "#rs_slices" ).val( ),
+        min: 10,
+        max: 30,
+        step: 1,
+        slide: function( event, ui ) {
+        jQuery( "#rs_slices" ).val( ui.value );
+        }
+    });
+    
+    jQuery('#rs_boxRows-slider').slider({
+        value: jQuery( "#rs_boxRows" ).val( ),
+        min: 1,
+        max: 20,
+        step: 1,
+        slide: function( event, ui ) {
+        jQuery( "#rs_boxRows" ).val( ui.value );
+        }
+    });
+    
+    jQuery('#rs_boxCols-slider').slider({
+        value: jQuery( "#rs_boxCols" ).val( ),
+        min: 1,
+        max: 20,
+        step: 1,
+        slide: function( event, ui ) {
+        jQuery( "#rs_boxCols" ).val( ui.value );
+        }
+    });
+    
+    function setAnimstyleOptions(style) {
+		jQuery("#rs_slices_box").hide();
+		jQuery("#rs_slices-slider").hide();
+		jQuery("#rs_boxCols_box").hide();
+		jQuery("#rs_boxCols-slider").hide();
+		jQuery("#rs_boxRows_box").hide();
+		jQuery("#rs_boxRows-slider").hide();
+		if(style == "random" || style.match(/slice/i)) {
+			jQuery("#rs_slices_box").show();
+			jQuery("#rs_slices-slider").show();
+		}
+		if(style == "random" || style.match(/box/i)) {
+			jQuery("#rs_boxCols_box").show();
+			jQuery("#rs_boxCols-slider").show();
+			jQuery("#rs_boxRows_box").show();
+			jQuery("#rs_boxRows-slider").show();
+		}
+	}
+    
+	setAnimstyleOptions(jQuery("#rs_animstyle").val());
+    
+    jQuery("#rs_animstyle").change(function() {
+		var style = jQuery(this).val();
+		setAnimstyleOptions(style);
+	});
+    
     jQuery('#rs_speed-slider').slider({
         value: jQuery( "#rs_speed" ).val( ),
         min: 100,

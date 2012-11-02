@@ -4,7 +4,7 @@ Donate link: http://www.nimble3.com/
 Tags: multiple sliders, banner, slider, sidebar, widget, plugin, nivo, nivo slider, jquery slider, simple slider, easy to use slider
 Requires at least: 3.0.1
 Tested up to: 3.4.2
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 
 Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with easy to use M-vSlider.
 == Description ==
@@ -100,3 +100,9 @@ Now supports
 
 1. Light, Dark and Bar, 3 new themes from http://nivo.dev7studios.com/themes/<br />
 2. Link is off when URL field is empty.<br /> 
+
+= 2.1.3 =
+
+1. THE BIG FISH: links are now working on Micro$oft IE (from version 7).<br />
+2. 'none' theme has a loading image now.<br />
+3. Admin options for slices, boxCols and boxRows configs for random, slice and box animations.<br />

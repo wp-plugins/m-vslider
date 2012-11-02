@@ -5,7 +5,7 @@
   Description: Implementing a featured image gallery into your WordPress theme has never been easier! Showcase your portfolio, animate your header or manage your banners with M-vSlider. M-vSlider by  Muhammad Amir Ul Amin.
   Author: M. Amir Ul Amin
   Author URI: http://www.nimble3.com
-  Version: 2.1.2
+  Version: 2.1.3
 
   M-vSlider is released under GPL:
   http://www.opensource.org/licenses/gpl-license.php
@@ -48,10 +48,16 @@ function rslider_head() {
             $rs_showhover = $rs_options['rs_showhover'];
             $rs_showhover = $rs_showhover && $rs_showdir ? 'true' : 'false';
             $rs_layout = $rs_options['rs_layout'];
+            $rs_slices = $rs_options['rs_slices']?$rs_options['rs_slices']:15;
+            $rs_boxCols = $rs_options['rs_boxCols']?$rs_options['rs_boxCols']:8;
+            $rs_boxRows = $rs_options['rs_boxRows']?$rs_options['rs_boxRows']:4;
             $layout = !$rs_layout?"width: {$rs_width}px; height: {$rs_height}px;":"";
             $rs_style_tag .= "#rslider$rs_id { $layout $rs_css }\n";
             $rs_script_tag .= "jQuery('#rslider$rs_id').nivoSlider({ 
                                     effect: '$rs_animstyle',
+                                    slices: $rs_slices,
+                                    boxCols: $rs_boxCols,
+                                    boxRows: $rs_boxRows,
                                     animSpeed: $rs_speed, 
                                     pauseTime: $rs_timeout,
                                     directionNav: $rs_showdir, 
@@ -318,7 +324,10 @@ function rslider_page() {
                 'rs_shownav' => $_POST['rs_shownav'],
                 'rs_showhover' => $_POST['rs_showhover'],
                 'rs_layout' => $_POST['rs_layout'],
-                'rs_theme' => $_POST['rs_theme']
+                'rs_theme' => $_POST['rs_theme'],
+                'rs_slices' => $_POST['rs_slices'],
+                'rs_boxRows' => $_POST['rs_boxRows'],
+                'rs_boxCols' => $_POST['rs_boxCols']
             );
 
             $updatequery = "UPDATE $table_slider SET rs_name='" . $_POST['rs_name'] . "',";
@@ -402,6 +411,9 @@ function rslider_page() {
         $rs_showhover = $rs_options['rs_showhover'];
         $rs_layout = $rs_options['rs_layout'];
         $rs_theme = $rs_options['rs_theme'];
+		$rs_slices = $rs_options['rs_slices']?$rs_options['rs_slices']:15;
+		$rs_boxCols = $rs_options['rs_boxCols']?$rs_options['rs_boxCols']:8;
+		$rs_boxRows = $rs_options['rs_boxRows']?$rs_options['rs_boxRows']:4;
 
         $rs_count = count($rs_images) > $rs_config_count ? count($rs_images) : $rs_config_count;
         ?>
@@ -429,7 +441,7 @@ function rslider_page() {
                             </p>
                             <p>
                                 <?php _e("Animation/Transition:"); ?>&nbsp;
-                                <select name="rs_animstyle">
+                                <select name="rs_animstyle" id="rs_animstyle">
                                     <option style="padding-right:10px;" value="sliceDown" <?php selected('sliceDown', $rs_animstyle); ?>><?php _e("sliceDown"); ?></option>
                                     <option style="padding-right:10px;" value="sliceDownLeft" <?php selected('sliceDownLeft', $rs_animstyle); ?>><?php _e("sliceDownLeft"); ?></option>
                                     <option style="padding-right:10px;" value="sliceUp" <?php selected('sliceUp', $rs_animstyle); ?>><?php _e("sliceUp"); ?></option>
@@ -448,6 +460,18 @@ function rslider_page() {
                                     <option style="padding-right:10px;" value="boxRainGrowReverse" <?php selected('boxRainGrowReverse', $rs_animstyle); ?>><?php _e("boxRainGrowReverse"); ?></option>
                                 </select>
                             </p>
+                            <p id="rs_slices_box">
+                                <?php _e("Number of Slices:"); ?>&nbsp;<img title="Number of Slices to show in Slice animations." src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" name="rs_slices" value="<?php echo $rs_slices; ?>" size="5" id="rs_slices" />
+                            </p>
+							<div id="rs_slices-slider"> </div>
+                            <p id="rs_boxCols_box">
+                                <?php _e("Number of Box Columns:"); ?>&nbsp;<img title="Number of Box Columns to show in Box animations." src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" name="rs_boxCols" value="<?php echo $rs_boxCols; ?>" size="5" id="rs_boxCols" />
+                            </p>
+							<div id="rs_boxCols-slider"> </div>
+                            <p id="rs_boxRows_box">
+                                <?php _e("Number of Box Rows:"); ?>&nbsp;<img title="Number of Box Rows to show in Box animations." src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" name="rs_boxRows" value="<?php echo $rs_boxRows; ?>" size="5" id="rs_boxRows" />
+                            </p>
+							<div id="rs_boxRows-slider"> </div>
                             <p>
                                 <?php _e("Theme:"); ?>&nbsp;
                                 <select name="rs_theme">
@@ -486,12 +510,12 @@ function rslider_page() {
                             <p>
                                 <?php _e("Speed:"); ?>&nbsp;<img title="Slide transition speed" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" name="rs_speed" value="<?php echo $rs_speed; ?>" size="5" id="rs_speed" />&nbsp;<?php _e("milliseconds"); ?>
                                 <br />
-                            <div id="rs_speed-slider"> </div>
+                                <div id="rs_speed-slider"> </div>
                             </p>
                             <p>
                                 <?php _e("Timeout:"); ?>&nbsp;<img title="How long each slide will show" src="<?php echo WP_PLUGIN_URL; ?>/m-vslider/help.png">&nbsp;<input readonly="readonly" type="text" id="rs_timeout" name="rs_timeout" value="<?php echo $rs_timeout; ?>" size="5" />&nbsp;<?php _e("seconds"); ?>
                                 <br />
-                            <div id="rs_timeout-slider"> </div>
+                                <div id="rs_timeout-slider"> </div>
                             </p>
                         </div>
                         <h3><?php _e("Custom CSS Settings"); ?></h3>
